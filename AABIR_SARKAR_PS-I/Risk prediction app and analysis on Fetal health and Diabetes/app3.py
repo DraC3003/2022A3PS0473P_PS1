@@ -72,7 +72,7 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     features = [float(request.form[feature]) for feature in feature_names]
-    api_key = 'AIzaSyAjyQ5jIMzDnlohpMIrigD-epVlhNETadU'  # Replace with your actual API key
+    api_key = 'enter ur api key'  # Replace with your actual API key
     risk, probability, videos = predict_and_recommend(features, model, scaler, api_key)
     return render_template('result.html', risk=risk, probability=probability, videos=videos)
 
