@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+        <div class="result">
+            <p>Your risk of diabetes is: <strong>{{ risk }}</strong></p>
+            <p>Probability of having diabetes: <strong>{{ '%.2f' % (probability * 100) }}%</strong></p>
+        </div>
+        <h2>Recommended Videos</h2>
+        <ul>
+            {% for video in videos %}
+                <li><a href="{{ video.url }}" target="_blank">{{ video.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <button onclick="window.history.back()">Go Back</button>
+    </div>
+</body>
+</html>
