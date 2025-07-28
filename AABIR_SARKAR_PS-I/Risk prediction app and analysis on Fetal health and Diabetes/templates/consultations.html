@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultation History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            min-width: 150px;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .consultations-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .consultations-table th, .consultations-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        .consultations-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .consultations-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .risk-positive {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .risk-negative {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .nav-buttons {
+            margin-bottom: 20px;
+        }
+        .nav-buttons a {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .nav-buttons a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-buttons">
+            <a href="{{ url_for('home') }}">New Prediction</a>
+        </div>
+        
+        <h1>Doctor Consultations Database</h1>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_consultations }}</div>
+                <div class="stat-label">Total Consultations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.positive_predictions }}</div>
+                <div class="stat-label">High Risk Cases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.negative_predictions }}</div>
+                <div class="stat-label">Low Risk Cases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ '%.1f' % (stats.avg_probability * 100) }}%</div>
+                <div class="stat-label">Average Risk Probability</div>
+            </div>
+        </div>
+
+        {% if consultations %}
+        <h2>Consultation History</h2>
+        <table class="consultations-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Age</th>
+                    <th>Glucose</th>
+                    <th>BMI</th>
+                    <th>Prediction</th>
+                    <th>Probability</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for consultation in consultations %}
+                <tr>
+                    <td>{{ consultation[0] }}</td>
+                    <td>{{ consultation[1] }}</td>
+                    <td>{{ consultation[9] }}</td>
+                    <td>{{ consultation[3] }}</td>
+                    <td>{{ '%.1f' % consultation[7] }}</td>
+                    <td>
+                        {% if consultation[10] == 1 %}
+                            <span class="risk-positive">High Risk</span>
+                        {% else %}
+                            <span class="risk-negative">Low Risk</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ '%.2f' % (consultation[11] * 100) }}%</td>
+                    <td>
+                        <a href="{{ url_for('consultation_detail', consultation_id=consultation[0]) }}">View Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No consultations found. <a href="{{ url_for('home') }}">Start your first prediction</a></p>
+        {% endif %}
+    </div>
+</body>
+</html>

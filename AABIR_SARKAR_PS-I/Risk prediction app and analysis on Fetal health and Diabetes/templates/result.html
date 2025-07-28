@@ -5,20 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediction Result</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .nav-buttons {
+            margin-bottom: 20px;
+        }
+        .nav-buttons a {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .nav-buttons a:hover {
+            background-color: #0056b3;
+        }
+        .consultation-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <div class="nav-buttons">
+            <a href="{{ url_for('consultations') }}">View All Consultations</a>
+        </div>
+        
         <h1>Prediction Result</h1>
+        
+        <div class="consultation-info">
+            <p><strong>Consultation ID:</strong> {{ consultation_id }}</p>
+            <p>This consultation has been saved to the database for future reference.</p>
+            <a href="{{ url_for('consultation_detail', consultation_id=consultation_id) }}">View Detailed Consultation Record</a>
+        </div>
+        
         <div class="result">
             <p>Your risk of diabetes is: <strong>{{ risk }}</strong></p>
             <p>Probability of having diabetes: <strong>{{ '%.2f' % (probability * 100) }}%</strong></p>
         </div>
         <h2>Recommended Videos</h2>
+        {% if videos %}
         <ul>
             {% for video in videos %}
                 <li><a href="{{ video.url }}" target="_blank">{{ video.title }}</a></li>
             {% endfor %}
         </ul>
+        {% else %}
+        <p><em>Video recommendations temporarily unavailable.</em></p>
+        {% endif %}
         <button onclick="window.history.back()">Go Back</button>
     </div>
 </body>
