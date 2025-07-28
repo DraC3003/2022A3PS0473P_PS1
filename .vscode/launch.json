@@ -15,7 +15,7 @@
             "args": [],
             "jinja": true,
             "justMyCode": false,
-            "python": "${workspaceFolder}/CONT/venv/bin/python"
+            "python": "./CONT/venv/Scripts/python.exe"
         },
         {
             "name": "Risk Prediction App (app3.py)",
@@ -31,7 +31,7 @@
             "args": [],
             "jinja": true,
             "justMyCode": false,
-            "python": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes/venv/bin/python"
+            "python": "./AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes/venv/Scripts/python.exe"
         },
         {
             "name": "Python: Current File",
