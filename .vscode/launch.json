@@ -1,0 +1,62 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Healthcare App (CONT)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/CONT/run.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/CONT",
+            "env": {
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "1"
+            },
+            "args": [],
+            "jinja": true,
+            "justMyCode": false,
+            "python": "${workspaceFolder}/CONT/venv/bin/python"
+        },
+        {
+            "name": "Risk Prediction App (app3.py)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes/app3.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes",
+            "env": {
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "1"
+            },
+            "args": [],
+            "jinja": true,
+            "justMyCode": false,
+            "python": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes/venv/bin/python"
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Current File (External Terminal)",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "externalTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Attach",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            }
+        }
+    ]
+}

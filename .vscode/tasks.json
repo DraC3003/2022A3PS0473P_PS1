@@ -1,0 +1,188 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Install Healthcare App Dependencies",
+            "type": "shell",
+            "command": "pip",
+            "args": ["install", "-r", "requirements.txt"],
+            "options": {
+                "cwd": "${workspaceFolder}/CONT"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Install Risk Prediction App Dependencies",
+            "type": "shell",
+            "command": "pip",
+            "args": ["install", "-r", "requirements.txt"],
+            "options": {
+                "cwd": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Initialize Healthcare App Database",
+            "type": "shell",
+            "command": "python",
+            "args": ["run.py", "init-db"],
+            "options": {
+                "cwd": "${workspaceFolder}/CONT"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Seed Healthcare App Database",
+            "type": "shell",
+            "command": "python",
+            "args": ["run.py", "seed-db"],
+            "options": {
+                "cwd": "${workspaceFolder}/CONT"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Healthcare App",
+            "type": "shell",
+            "command": "python",
+            "args": ["run.py"],
+            "options": {
+                "cwd": "${workspaceFolder}/CONT"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Risk Prediction App",
+            "type": "shell",
+            "command": "python",
+            "args": ["app3.py"],
+            "options": {
+                "cwd": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Create Virtual Environment (CONT)",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "venv", "venv"],
+            "options": {
+                "cwd": "${workspaceFolder}/CONT"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Create Virtual Environment (Risk Prediction)",
+            "type": "shell",
+            "command": "python",
+            "args": ["-m", "venv", "venv"],
+            "options": {
+                "cwd": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Format Python Code",
+            "type": "shell",
+            "command": "black",
+            "args": [".", "--line-length", "88"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Lint Python Code",
+            "type": "shell",
+            "command": "flake8",
+            "args": ["."],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "python",
+                    "fileLocation": ["relative", "${workspaceFolder}"],
+                    "pattern": {
+                        "regexp": "^(.*):(\\d+):(\\d+):\\s+(\\w\\d+)\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "code": 4,
+                        "message": 5
+                    }
+                }
+            ]
+        }
+    ]
+}
