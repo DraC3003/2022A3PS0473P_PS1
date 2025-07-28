@@ -1,0 +1,60 @@
+{
+    "python.defaultInterpreterPath": "./CONT/venv/Scripts/python.exe",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--line-length", "88"],
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
+    "files.associations": {
+        "*.html": "html",
+        "*.jinja": "jinja-html",
+        "*.jinja2": "jinja-html"
+    },
+    "emmet.includeLanguages": {
+        "jinja-html": "html"
+    },
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/venv": false,
+        "**/node_modules": true,
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/instance": true
+    },
+    "python.terminal.activateEnvironment": true,
+    "python.envFile": "${workspaceFolder}/.env",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#1e3a5f",
+        "activityBar.foreground": "#ffffff"
+    },
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.py": "${basename}.pyc",
+        "requirements.txt": "requirements-*.txt, requirements*.txt",
+        "app.py": "wsgi.py, gunicorn.conf.py",
+        "config.py": "config.*.py",
+        ".env": ".env.*"
+    },
+    "python.analysis.extraPaths": [
+        "./CONT",
+        "./AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes"
+    ],
+    "jupyter.askForKernelRestart": false,
+    "notebook.cellToolbarLocation": {
+        "default": "right",
+        "jupyter-notebook": "left"
+    }
+}

@@ -1,0 +1,73 @@
+{
+    "name": "PS1 Healthcare Apps Workspace",
+    "folders": [
+        {
+            "name": "Healthcare App (CONT)",
+            "path": "./CONT"
+        },
+        {
+            "name": "Risk Prediction App",
+            "path": "./AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes"
+        },
+        {
+            "name": "Root",
+            "path": "./"
+        }
+    ],
+    "settings": {
+        "python.defaultInterpreterPath": "./CONT/venv/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "files.associations": {
+            "*.html": "html",
+            "*.jinja": "jinja-html",
+            "*.jinja2": "jinja-html"
+        },
+        "emmet.includeLanguages": {
+            "jinja-html": "html"
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.debugpy",
+            "ms-python.flake8",
+            "ms-python.black-formatter",
+            "ms-toolsai.jupyter",
+            "wholroyd.jinja",
+            "rangav.vscode-thunder-client",
+            "eamodio.gitlens",
+            "njpwerner.autodocstring",
+            "kevinrose.vsc-python-indent",
+            "esbenp.prettier-vscode"
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Healthcare App",
+                "type": "python",
+                "request": "launch",
+                "program": "${workspaceFolder}/CONT/run.py",
+                "console": "integratedTerminal",
+                "cwd": "${workspaceFolder}/CONT",
+                "env": {
+                    "FLASK_ENV": "development",
+                    "FLASK_DEBUG": "1"
+                }
+            },
+            {
+                "name": "Risk Prediction App",
+                "type": "python",
+                "request": "launch",
+                "program": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes/app3.py",
+                "console": "integratedTerminal",
+                "cwd": "${workspaceFolder}/AABIR_SARKAR_PS-I/Risk prediction app and analysis on Fetal health and Diabetes",
+                "env": {
+                    "FLASK_ENV": "development",
+                    "FLASK_DEBUG": "1"
+                }
+            }
+        ]
+    }
+}
