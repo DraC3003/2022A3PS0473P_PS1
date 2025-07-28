@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultation Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .consultation-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .factors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .factor-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .factor-label {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .factor-value {
+            font-size: 1.2em;
+            color: #007bff;
+        }
+        .prediction-result {
+            background: #fff;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .risk-high {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .risk-low {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .nav-buttons {
+            margin-bottom: 20px;
+        }
+        .nav-buttons a {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .nav-buttons a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="detail-container">
+            <div class="nav-buttons">
+                <a href="{{ url_for('consultations') }}">Back to Consultations</a>
+                <a href="{{ url_for('home') }}">New Prediction</a>
+            </div>
+            
+            <h1>Consultation Details</h1>
+            
+            {% if consultation %}
+            <div class="consultation-info">
+                <h3>Consultation #{{ consultation[0] }}</h3>
+                <p><strong>Date:</strong> {{ consultation[1] }}</p>
+                <p><strong>Created:</strong> {{ consultation[12] }}</p>
+            </div>
+
+            <div class="prediction-result {% if consultation[10] == 1 %}risk-high{% else %}risk-low{% endif %}">
+                <h2>Prediction Result</h2>
+                <p style="font-size: 1.5em; margin: 10px 0;">
+                    {% if consultation[10] == 1 %}
+                        <span style="color: #dc3545; font-weight: bold;">High Risk for Diabetes</span>
+                    {% else %}
+                        <span style="color: #28a745; font-weight: bold;">Low Risk for Diabetes</span>
+                    {% endif %}
+                </p>
+                <p><strong>Probability:</strong> {{ '%.2f' % (consultation[11] * 100) }}%</p>
+            </div>
+
+            <h3>Patient Factors</h3>
+            <div class="factors-grid">
+                <div class="factor-item">
+                    <div class="factor-label">Pregnancies</div>
+                    <div class="factor-value">{{ consultation[2] }}</div>
+                </div>
+                <div class="factor-item">
+                    <div class="factor-label">Glucose Level</div>
+                    <div class="factor-value">{{ consultation[3] }} mg/dL</div>
+                </div>
+                <div class="factor-item">
+                    <div class="factor-label">Blood Pressure</div>
+                    <div class="factor-value">{{ consultation[4] }} mm Hg</div>
+                </div>
+                <div class="factor-item">
+                    <div class="factor-label">Skin Thickness</div>
+                    <div class="factor-value">{{ consultation[5] }} mm</div>
+                </div>
+                <div class="factor-item">
+                    <div class="factor-label">Insulin</div>
+                    <div class="factor-value">{{ consultation[6] }} μU/mL</div>
+                </div>
+                <div class="factor-item">
+                    <div class="factor-label">BMI</div>
+                    <div class="factor-value">{{ '%.1f' % consultation[7] }}</div>
+                </div>
+                <div class="factor-item">
+                    <div class="factor-label">Diabetes Pedigree Function</div>
+                    <div class="factor-value">{{ '%.3f' % consultation[8] }}</div>
+                </div>
+                <div class="factor-item">
+                    <div class="factor-label">Age</div>
+                    <div class="factor-value">{{ consultation[9] }} years</div>
+                </div>
+            </div>
+
+            <div style="background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 20px;">
+                <h4>Clinical Interpretation</h4>
+                <p>
+                    {% if consultation[10] == 1 %}
+                        This patient shows indicators suggesting an increased risk for diabetes. 
+                        Consider lifestyle modifications, regular monitoring, and potential preventive measures.
+                    {% else %}
+                        This patient shows favorable indicators with lower diabetes risk. 
+                        Continue with regular health monitoring and maintain healthy lifestyle practices.
+                    {% endif %}
+                </p>
+                <p><em>Note: This prediction is based on a machine learning model and should be used as a support tool alongside professional medical assessment.</em></p>
+            </div>
+
+            {% else %}
+            <p>Consultation not found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
