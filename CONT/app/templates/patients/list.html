@@ -1,0 +1,203 @@
+{% extends "base.html" %} {% block page_title %}Patients{% endblock %} {% block
+page_actions %}
+<a href="{{ url_for('patients.add_patient') }}" class="btn btn-primary">
+  <i class="fas fa-plus me-2"></i>Add Patient
+</a>
+{% endblock %} {% block content %}
+<div class="row">
+  <div class="col-12">
+    <!-- Search Form -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <form method="GET" action="{{ url_for('patients.list_patients') }}">
+          <div class="row">
+            <div class="col-md-8">
+              <input
+                type="text"
+                class="form-control"
+                name="search"
+                placeholder="Search patients by name, email, or phone..."
+                value="{{ search or '' }}" />
+            </div>
+            <div class="col-md-4">
+              <button type="submit" class="btn btn-outline-primary me-2">
+                <i class="fas fa-search"></i> Search
+              </button>
+              <a
+                href="{{ url_for('patients.list_patients') }}"
+                class="btn btn-outline-secondary">
+                <i class="fas fa-times"></i> Clear
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Patients Table -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          All Patients ({{ patients.total }} total)
+        </h5>
+      </div>
+      <div class="card-body">
+        {% if patients.items %}
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Pregnancy Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for patient in patients.items %}
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div
+                      class="avatar bg-primary text-white rounded-circle me-2"
+                      style="
+                        width: 32px;
+                        height: 32px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      ">
+                      {{ patient.first_name[0] }}{{ patient.last_name[0] }}
+                    </div>
+                    <div>
+                      <strong
+                        >{{ patient.first_name }} {{ patient.last_name
+                        }}</strong
+                      >
+                    </div>
+                  </div>
+                </td>
+                <td>{{ patient.email }}</td>
+                <td>{{ patient.phone or 'N/A' }}</td>
+                <td>
+                  {{ patient.date_of_birth.strftime('%Y-%m-%d') if
+                  patient.date_of_birth else 'N/A' }}
+                </td>
+                <td>{{ patient.gender or 'N/A' }}</td>
+                <td>
+                  {% if patient.is_pregnant %}
+                  <span class="badge bg-success">Pregnant</span>
+                  {% if patient.pregnancy_start_date %}
+                  <small class="text-muted d-block"
+                    >Since: {{ patient.pregnancy_start_date.strftime('%Y-%m-%d')
+                    }}</small
+                  >
+                  {% endif %} {% else %}
+                  <span class="badge bg-secondary">Not Pregnant</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <a
+                      href="{{ url_for('patients.view_patient', id=patient.id) }}"
+                      class="btn btn-sm btn-outline-primary"
+                      title="View Patient">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <a
+                      href="{{ url_for('patients.edit_patient', id=patient.id) }}"
+                      class="btn btn-sm btn-outline-secondary"
+                      title="Edit Patient">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <a
+                      href="{{ url_for('prescriptions.add_prescription', patient_id=patient.id) }}"
+                      class="btn btn-sm btn-outline-success"
+                      title="Add Prescription">
+                      <i class="fas fa-pills"></i>
+                    </a>
+                    {% if patient.is_pregnant %}
+                    <a
+                      href="{{ url_for('risk.assess_risk', patient_id=patient.id) }}"
+                      class="btn btn-sm btn-outline-warning"
+                      title="Risk Assessment">
+                      <i class="fas fa-stethoscope"></i>
+                    </a>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if patients.pages > 1 %}
+        <nav aria-label="Patient pagination" class="mt-4">
+          <ul class="pagination justify-content-center">
+            {% if patients.has_prev %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="{{ url_for('patients.list_patients', page=patients.prev_num, search=search) }}">
+                <i class="fas fa-chevron-left"></i> Previous
+              </a>
+            </li>
+            {% endif %} {% for page_num in patients.iter_pages() %} {% if
+            page_num %} {% if page_num != patients.page %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="{{ url_for('patients.list_patients', page=page_num, search=search) }}"
+                >{{ page_num }}</a
+              >
+            </li>
+            {% else %}
+            <li class="page-item active">
+              <span class="page-link">{{ page_num }}</span>
+            </li>
+            {% endif %} {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">…</span>
+            </li>
+            {% endif %} {% endfor %} {% if patients.has_next %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="{{ url_for('patients.list_patients', page=patients.next_num, search=search) }}">
+                Next <i class="fas fa-chevron-right"></i>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+        {% endif %} {% else %}
+        <div class="text-center py-4">
+          <i class="fas fa-users fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">No patients found</h5>
+          {% if search %}
+          <p class="text-muted">No patients match your search criteria.</p>
+          <a
+            href="{{ url_for('patients.list_patients') }}"
+            class="btn btn-outline-primary"
+            >View All Patients</a
+          >
+          {% else %}
+          <p class="text-muted">Start by adding your first patient.</p>
+          <a
+            href="{{ url_for('patients.add_patient') }}"
+            class="btn btn-primary"
+            >Add Patient</a
+          >
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

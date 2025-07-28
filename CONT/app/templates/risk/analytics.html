@@ -1,0 +1,324 @@
+{% extends "base.html" %} {% block page_title %}Risk Analytics{% endblock %} {%
+block page_actions %}
+<a href="{{ url_for('risk.assess_risk') }}" class="btn btn-primary">
+  <i class="fas fa-stethoscope me-2"></i>New Assessment
+</a>
+{% endblock %} {% block content %}
+<div class="row">
+  <!-- Summary Cards -->
+  <div class="col-md-3 mb-4">
+    <div class="card bg-danger text-white">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h6 class="card-title">High Risk</h6>
+            <h2 class="mb-0">{{ high_risk_count }}</h2>
+          </div>
+          <div class="align-self-center">
+            <i class="fas fa-exclamation-triangle fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-4">
+    <div class="card bg-warning text-white">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h6 class="card-title">Medium Risk</h6>
+            <h2 class="mb-0">{{ medium_risk_count }}</h2>
+          </div>
+          <div class="align-self-center">
+            <i class="fas fa-exclamation-circle fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-4">
+    <div class="card bg-success text-white">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h6 class="card-title">Low Risk</h6>
+            <h2 class="mb-0">{{ low_risk_count }}</h2>
+          </div>
+          <div class="align-self-center">
+            <i class="fas fa-check-circle fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 mb-4">
+    <div class="card bg-info text-white">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h6 class="card-title">Total Assessments</h6>
+            <h2 class="mb-0">{{ total_assessments }}</h2>
+          </div>
+          <div class="align-self-center">
+            <i class="fas fa-chart-line fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Risk Distribution Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Risk Level Distribution</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="riskDistributionChart" width="400" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Trends Chart -->
+  <div class="col-lg-6 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Risk Assessments Over Time</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="riskTrendsChart" width="400" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Condition-Specific Risks -->
+  <div class="col-lg-6 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Risk by Condition</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="conditionRiskChart" width="400" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent High Risk Patients -->
+  <div class="col-lg-6 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Recent High Risk Patients</h5>
+      </div>
+      <div class="card-body">
+        {% if recent_assessments %}
+        <div class="list-group list-group-flush">
+          {% for assessment in recent_assessments %}
+          <div
+            class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">
+                {{ assessment.patient.first_name }} {{
+                assessment.patient.last_name }}
+              </div>
+              <small class="text-muted"
+                >Assessment: {{ assessment.assessment_date.strftime('%Y-%m-%d')
+                }}</small
+              >
+              <br />
+              <small class="text-muted"
+                >Week {{ assessment.pregnancy_week }} - Overall Score: {{
+                "%.2f"|format(assessment.overall_risk_score) }}</small
+              >
+            </div>
+            <span
+              class="badge bg-{{ 'danger' if assessment.risk_level == 'High' else 'warning' if assessment.risk_level == 'Medium' else 'success' }} rounded-pill">
+              {{ assessment.risk_level }}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="mt-3">
+          <a
+            href="{{ url_for('risk.high_risk_patients') }}"
+            class="btn btn-outline-primary btn-sm">
+            View All High Risk Patients
+          </a>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+          <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No recent assessments found.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Age Distribution -->
+<div class="row">
+  <div class="col-12 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Risk by Maternal Age Groups</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="ageRiskChart" width="800" height="300"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Risk Distribution Pie Chart
+  const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+  new Chart(riskCtx, {
+      type: 'doughnut',
+      data: {
+          labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+          datasets: [{
+              data: [{{ high_risk_count }}, {{ medium_risk_count }}, {{ low_risk_count }}],
+              backgroundColor: ['#dc3545', '#ffc107', '#28a745'],
+              borderColor: ['#ffffff'],
+              borderWidth: 2
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+              legend: {
+                  position: 'bottom'
+              }
+          }
+      }
+  });
+
+  // Risk Trends Line Chart
+  const trendsCtx = document.getElementById('riskTrendsChart').getContext('2d');
+  new Chart(trendsCtx, {
+      type: 'line',
+      data: {
+          labels: {{ trends_labels | safe }},
+          datasets: [{
+              label: 'High Risk',
+              data: {{ trends_high | safe }},
+              borderColor: '#dc3545',
+              backgroundColor: 'rgba(220, 53, 69, 0.1)',
+              tension: 0.4
+          }, {
+              label: 'Medium Risk',
+              data: {{ trends_medium | safe }},
+              borderColor: '#ffc107',
+              backgroundColor: 'rgba(255, 193, 7, 0.1)',
+              tension: 0.4
+          }, {
+              label: 'Low Risk',
+              data: {{ trends_low | safe }},
+              borderColor: '#28a745',
+              backgroundColor: 'rgba(40, 167, 69, 0.1)',
+              tension: 0.4
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+              legend: {
+                  position: 'bottom'
+              }
+          },
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+
+  // Condition-Specific Risk Chart
+  const conditionCtx = document.getElementById('conditionRiskChart').getContext('2d');
+  new Chart(conditionCtx, {
+      type: 'bar',
+      data: {
+          labels: ['Preeclampsia', 'Gestational Diabetes', 'Preterm Birth'],
+          datasets: [{
+              label: 'Average Risk Score',
+              data: {{ condition_risks | safe }},
+              backgroundColor: ['rgba(220, 53, 69, 0.8)', 'rgba(255, 193, 7, 0.8)', 'rgba(40, 167, 69, 0.8)'],
+              borderColor: ['#dc3545', '#ffc107', '#28a745'],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+              legend: {
+                  display: false
+              }
+          },
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  max: 100
+              }
+          }
+      }
+  });
+
+  // Age Risk Chart
+  const ageCtx = document.getElementById('ageRiskChart').getContext('2d');
+  new Chart(ageCtx, {
+      type: 'bar',
+      data: {
+          labels: {{ age_groups | safe }},
+          datasets: [{
+              label: 'High Risk',
+              data: {{ age_high_risk | safe }},
+              backgroundColor: 'rgba(220, 53, 69, 0.8)',
+              borderColor: '#dc3545',
+              borderWidth: 1
+          }, {
+              label: 'Medium Risk',
+              data: {{ age_medium_risk | safe }},
+              backgroundColor: 'rgba(255, 193, 7, 0.8)',
+              borderColor: '#ffc107',
+              borderWidth: 1
+          }, {
+              label: 'Low Risk',
+              data: {{ age_low_risk | safe }},
+              backgroundColor: 'rgba(40, 167, 69, 0.8)',
+              borderColor: '#28a745',
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+              legend: {
+                  position: 'bottom'
+              }
+          },
+          scales: {
+              x: {
+                  stacked: true
+              },
+              y: {
+                  stacked: true,
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,288 @@
+{% extends "base.html" %} {% block title %}High Risk Patients{% endblock %} {%
+block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+          <i class="fas fa-exclamation-triangle text-danger"></i> High Risk
+          Patients
+        </h2>
+        <div>
+          <a
+            href="{{ url_for('risk.list_assessments') }}"
+            class="btn btn-secondary">
+            <i class="fas fa-list"></i> All Assessments
+          </a>
+          <a href="{{ url_for('risk.assess_risk') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Assessment
+          </a>
+        </div>
+      </div>
+
+      <!-- Alert Banner -->
+      <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">
+          <i class="fas fa-exclamation-triangle"></i> High Risk Alert
+        </h4>
+        <p>
+          These patients have been identified as high risk and require immediate
+          attention and frequent monitoring.
+        </p>
+        <hr />
+        <p class="mb-0">
+          <strong>Action Required:</strong> Schedule urgent follow-up
+          appointments and implement enhanced monitoring protocols.
+        </p>
+      </div>
+
+      <!-- High Risk Patients Table -->
+      <div class="card">
+        <div class="card-header bg-danger text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-users"></i> High Risk Pregnancy Cases ({{
+            assessments|length }})
+          </h5>
+        </div>
+        <div class="card-body">
+          {% if assessments %}
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>Patient</th>
+                  <th>Assessment Date</th>
+                  <th>Pregnancy Week</th>
+                  <th>Age</th>
+                  <th>Overall Risk</th>
+                  <th>Primary Risks</th>
+                  <th>Next Checkup</th>
+                  <th>Priority</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for assessment in assessments %}
+                <tr class="table-danger">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        <i class="fas fa-female fa-2x text-danger"></i>
+                      </div>
+                      <div>
+                        <strong
+                          >{{ assessment.patient.first_name }} {{
+                          assessment.patient.last_name }}</strong
+                        ><br />
+                        <small class="text-muted"
+                          >{{ assessment.patient.email }}</small
+                        ><br />
+                        <small class="text-muted"
+                          >{{ assessment.patient.phone }}</small
+                        >
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="fw-bold"
+                      >{{ assessment.assessment_date.strftime('%Y-%m-%d')
+                      }}</span
+                    ><br />
+                    <small class="text-muted"
+                      >{{ assessment.assessment_date.strftime('%H:%M') }}</small
+                    >
+                  </td>
+                  <td>
+                    <span class="badge bg-info fs-6"
+                      >{{ assessment.pregnancy_week }} weeks</span
+                    >
+                    {% if assessment.pregnancy_week > 37 %}
+                    <br /><small class="text-warning"
+                      ><i class="fas fa-clock"></i> Full term</small
+                    >
+                    {% elif assessment.pregnancy_week > 28 %}
+                    <br /><small class="text-info"
+                      ><i class="fas fa-clock"></i> Third trimester</small
+                    >
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="fw-bold"
+                      >{{ assessment.maternal_age }} years</span
+                    >
+                    {% if assessment.maternal_age >= 35 %}
+                    <br /><small class="text-warning"
+                      ><i class="fas fa-exclamation-triangle"></i> Advanced
+                      age</small
+                    >
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="progress mb-1" style="height: 20px">
+                      <div
+                        class="progress-bar bg-danger"
+                        style="width: {{ (assessment.overall_risk_score * 100)|round }}%">
+                        {{ (assessment.overall_risk_score * 100)|round }}%
+                      </div>
+                    </div>
+                    <span class="badge bg-danger">HIGH RISK</span>
+                  </td>
+                  <td>
+                    <div class="risk-indicators">
+                      {% if assessment.preeclampsia_risk > 0.6 %}
+                      <span class="badge bg-danger mb-1">
+                        <i class="fas fa-heart-pulse"></i> Preeclampsia: {{
+                        (assessment.preeclampsia_risk * 100)|round }}% </span
+                      ><br />
+                      {% endif %} {% if assessment.gestational_diabetes_risk >
+                      0.6 %}
+                      <span class="badge bg-warning mb-1">
+                        <i class="fas fa-tint"></i> Diabetes: {{
+                        (assessment.gestational_diabetes_risk * 100)|round }}% </span
+                      ><br />
+                      {% endif %} {% if assessment.preterm_birth_risk > 0.6 %}
+                      <span class="badge bg-danger mb-1">
+                        <i class="fas fa-baby"></i> Preterm: {{
+                        (assessment.preterm_birth_risk * 100)|round }}% </span
+                      ><br />
+                      {% endif %} {% if assessment.systolic_bp and
+                      assessment.systolic_bp > 140 %}
+                      <span class="badge bg-danger mb-1">
+                        <i class="fas fa-heartbeat"></i> High BP: {{
+                        assessment.systolic_bp }}/{{ assessment.diastolic_bp }} </span
+                      ><br />
+                      {% endif %} {% if assessment.protein_in_urine %}
+                      <span class="badge bg-warning mb-1">
+                        <i class="fas fa-flask"></i> Proteinuria </span
+                      ><br />
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td>
+                    {% if assessment.next_checkup_date %}
+                    <span class="text-info">
+                      <i class="fas fa-calendar-alt"></i> {{
+                      assessment.next_checkup_date.strftime('%Y-%m-%d') }}
+                    </span>
+                    {% else %}
+                    <span class="text-danger">
+                      <i class="fas fa-calendar-times"></i> Not scheduled
+                    </span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% set priority_score = assessment.overall_risk_score %} {%
+                    if priority_score > 0.8 %}
+                    <span class="badge bg-danger fs-6">
+                      <i class="fas fa-exclamation-triangle"></i> URGENT
+                    </span>
+                    {% elif priority_score > 0.6 %}
+                    <span class="badge bg-warning fs-6">
+                      <i class="fas fa-clock"></i> HIGH
+                    </span>
+                    {% else %}
+                    <span class="badge bg-secondary fs-6">
+                      <i class="fas fa-eye"></i> MONITOR
+                    </span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="btn-group-vertical btn-group-sm">
+                      <a
+                        href="{{ url_for('risk.view_assessment', id=assessment.id) }}"
+                        class="btn btn-outline-primary mb-1"
+                        title="View Full Assessment">
+                        <i class="fas fa-eye"></i> Details
+                      </a>
+                      <a
+                        href="{{ url_for('risk.risk_timeline', patient_id=assessment.patient.id) }}"
+                        class="btn btn-outline-info mb-1"
+                        title="Risk Timeline">
+                        <i class="fas fa-chart-line"></i> Timeline
+                      </a>
+                      <a
+                        href="{{ url_for('patients.view_patient', id=assessment.patient.id) }}"
+                        class="btn btn-outline-secondary mb-1"
+                        title="Patient Profile">
+                        <i class="fas fa-user"></i> Profile
+                      </a>
+                      <a
+                        href="{{ url_for('risk.assess_risk', patient_id=assessment.patient.id) }}"
+                        class="btn btn-outline-warning"
+                        title="New Assessment">
+                        <i class="fas fa-plus"></i> Reassess
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Risk Summary Statistics -->
+          <div class="row mt-4">
+            <div class="col-md-3">
+              <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                  <h4>{{ assessments|length }}</h4>
+                  <p class="mb-0">High Risk Cases</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                  <h4>
+                    {{ assessments|selectattr('next_checkup_date')|list|length
+                    }}
+                  </h4>
+                  <p class="mb-0">Scheduled Checkups</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                  <h4>
+                    {{ assessments|selectattr('pregnancy_week', 'gt',
+                    37)|list|length }}
+                  </h4>
+                  <p class="mb-0">Full Term</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card bg-secondary text-white">
+                <div class="card-body text-center">
+                  <h4>
+                    {{ (assessments|map(attribute='overall_risk_score')|sum /
+                    assessments|length * 100)|round if assessments else 0 }}%
+                  </h4>
+                  <p class="mb-0">Avg Risk Score</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% else %}
+          <div class="text-center py-5">
+            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+            <h4 class="text-success">No High Risk Patients</h4>
+            <p class="text-muted">
+              Great news! Currently there are no patients with high risk
+              assessments.
+            </p>
+            <a
+              href="{{ url_for('risk.list_assessments') }}"
+              class="btn btn-primary">
+              <i class="fas fa-list"></i> View All Assessments
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

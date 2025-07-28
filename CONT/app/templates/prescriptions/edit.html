@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Prescription{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Edit Prescription</h1>
+    <a href="{{ url_for('prescriptions.view_prescription', id=prescription.id) }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Prescription
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-pencil"></i> Edit Prescription Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <!-- Patient Selection -->
+                    <div class="mb-3">
+                        <label for="patient_id" class="form-label">Patient *</label>
+                        <select class="form-select" id="patient_id" name="patient_id" required>
+                            <option value="">Select a patient...</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}" 
+                                {% if patient.id == prescription.patient_id %}selected{% endif %}>
+                                {{ patient.first_name }} {{ patient.last_name }} - {{ patient.email }}
+                                {% if patient.is_pregnant %} (Pregnant){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Medication Details -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="medication_name" class="form-label">Medication Name *</label>
+                                <input type="text" class="form-control" id="medication_name" name="medication_name" 
+                                       value="{{ prescription.medication_name }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="dosage" class="form-label">Dosage *</label>
+                                <input type="text" class="form-control" id="dosage" name="dosage" 
+                                       value="{{ prescription.dosage }}" placeholder="e.g., 500mg" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="frequency" class="form-label">Frequency *</label>
+                                <select class="form-select" id="frequency" name="frequency" required>
+                                    <option value="">Select frequency...</option>
+                                    <option value="Once daily" {% if prescription.frequency == 'Once daily' %}selected{% endif %}>Once daily</option>
+                                    <option value="Twice daily" {% if prescription.frequency == 'Twice daily' %}selected{% endif %}>Twice daily</option>
+                                    <option value="Three times daily" {% if prescription.frequency == 'Three times daily' %}selected{% endif %}>Three times daily</option>
+                                    <option value="Four times daily" {% if prescription.frequency == 'Four times daily' %}selected{% endif %}>Four times daily</option>
+                                    <option value="Every 4 hours" {% if prescription.frequency == 'Every 4 hours' %}selected{% endif %}>Every 4 hours</option>
+                                    <option value="Every 6 hours" {% if prescription.frequency == 'Every 6 hours' %}selected{% endif %}>Every 6 hours</option>
+                                    <option value="Every 8 hours" {% if prescription.frequency == 'Every 8 hours' %}selected{% endif %}>Every 8 hours</option>
+                                    <option value="Every 12 hours" {% if prescription.frequency == 'Every 12 hours' %}selected{% endif %}>Every 12 hours</option>
+                                    <option value="As needed" {% if prescription.frequency == 'As needed' %}selected{% endif %}>As needed</option>
+                                    <option value="Weekly" {% if prescription.frequency == 'Weekly' %}selected{% endif %}>Weekly</option>
+                                    <option value="Monthly" {% if prescription.frequency == 'Monthly' %}selected{% endif %}>Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="duration" class="form-label">Duration</label>
+                                <input type="text" class="form-control" id="duration" name="duration" 
+                                       value="{{ prescription.duration }}" placeholder="e.g., 7 days, 2 weeks">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="prescribed_date" class="form-label">Prescribed Date *</label>
+                                <input type="date" class="form-control" id="prescribed_date" name="prescribed_date" 
+                                       value="{{ prescription.prescribed_date.strftime('%Y-%m-%d') }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" 
+                                       value="{% if prescription.start_date %}{{ prescription.start_date.strftime('%Y-%m-%d') }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date" 
+                                       value="{% if prescription.end_date %}{{ prescription.end_date.strftime('%Y-%m-%d') }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical Information -->
+                    <div class="mb-3">
+                        <label for="diagnosis" class="form-label">Diagnosis</label>
+                        <input type="text" class="form-control" id="diagnosis" name="diagnosis" 
+                               value="{{ prescription.diagnosis }}" placeholder="Primary diagnosis or condition">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="instructions" class="form-label">Instructions</label>
+                        <textarea class="form-control" id="instructions" name="instructions" rows="3" 
+                                  placeholder="Detailed instructions for the patient">{{ prescription.instructions }}</textarea>
+                    </div>
+
+                    <!-- Pregnancy Information -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="pregnancy_category" class="form-label">Pregnancy Category</label>
+                                <select class="form-select" id="pregnancy_category" name="pregnancy_category">
+                                    <option value="">Not specified</option>
+                                    <option value="A" {% if prescription.pregnancy_category == 'A' %}selected{% endif %}>Category A - Safe</option>
+                                    <option value="B" {% if prescription.pregnancy_category == 'B' %}selected{% endif %}>Category B - Probably Safe</option>
+                                    <option value="C" {% if prescription.pregnancy_category == 'C' %}selected{% endif %}>Category C - Use with Caution</option>
+                                    <option value="D" {% if prescription.pregnancy_category == 'D' %}selected{% endif %}>Category D - Use Only if Necessary</option>
+                                    <option value="X" {% if prescription.pregnancy_category == 'X' %}selected{% endif %}>Category X - Contraindicated</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="pregnancy_safe" class="form-label">Pregnancy Safe</label>
+                                <select class="form-select" id="pregnancy_safe" name="pregnancy_safe">
+                                    <option value="">Not specified</option>
+                                    <option value="true" {% if prescription.pregnancy_safe == true %}selected{% endif %}>Yes</option>
+                                    <option value="false" {% if prescription.pregnancy_safe == false %}selected{% endif %}>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status and Notes -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                           {% if prescription.is_active %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_active">
+                                        Active Prescription
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                  placeholder="Any additional notes or observations">{{ prescription.notes }}</textarea>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Update Prescription
+                        </button>
+                        <a href="{{ url_for('prescriptions.view_prescription', id=prescription.id) }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Sidebar -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i> Help & Guidelines
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Dosage Guidelines:</h6>
+                <ul class="small">
+                    <li>Include unit (mg, ml, tablets)</li>
+                    <li>Be specific (e.g., "500mg tablet")</li>
+                    <li>Include route if not oral</li>
+                </ul>
+
+                <h6 class="mt-3">Frequency Examples:</h6>
+                <ul class="small">
+                    <li>Once daily (morning)</li>
+                    <li>Twice daily (morning, evening)</li>
+                    <li>Three times daily (with meals)</li>
+                    <li>Every 6 hours</li>
+                    <li>As needed for pain</li>
+                </ul>
+
+                <h6 class="mt-3">Pregnancy Categories:</h6>
+                <ul class="small">
+                    <li><strong>A:</strong> No risk in human studies</li>
+                    <li><strong>B:</strong> No risk in animal studies</li>
+                    <li><strong>C:</strong> Risk cannot be ruled out</li>
+                    <li><strong>D:</strong> Positive evidence of risk</li>
+                    <li><strong>X:</strong> Contraindicated</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Current Patient Info -->
+        {% if prescription.patient %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person"></i> Current Patient
+                </h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Name:</strong> {{ prescription.patient.first_name }} {{ prescription.patient.last_name }}</p>
+                <p><strong>Age:</strong> {{ (prescription.patient.date_of_birth|age) }} years</p>
+                <p><strong>Gender:</strong> {{ prescription.patient.gender }}</p>
+                {% if prescription.patient.is_pregnant %}
+                <p><strong>Status:</strong> <span class="badge bg-pink text-white">Pregnant</span></p>
+                {% endif %}
+                {% if prescription.patient.allergies %}
+                <p><strong>Allergies:</strong> <span class="text-danger">{{ prescription.patient.allergies }}</span></p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Auto-calculate end date based on start date and duration
+document.addEventListener('DOMContentLoaded', function() {
+    const startDateInput = document.getElementById('start_date');
+    const durationInput = document.getElementById('duration');
+    const endDateInput = document.getElementById('end_date');
+
+    function calculateEndDate() {
+        const startDate = startDateInput.value;
+        const duration = durationInput.value;
+
+        if (startDate && duration) {
+            const start = new Date(startDate);
+            const durationMatch = duration.match(/(\d+)\s*(day|week|month)/i);
+            
+            if (durationMatch) {
+                const amount = parseInt(durationMatch[1]);
+                const unit = durationMatch[2].toLowerCase();
+                
+                if (unit === 'day') {
+                    start.setDate(start.getDate() + amount);
+                } else if (unit === 'week') {
+                    start.setDate(start.getDate() + (amount * 7));
+                } else if (unit === 'month') {
+                    start.setMonth(start.getMonth() + amount);
+                }
+                
+                endDateInput.value = start.toISOString().split('T')[0];
+            }
+        }
+    }
+
+    startDateInput.addEventListener('change', calculateEndDate);
+    durationInput.addEventListener('input', calculateEndDate);
+
+    // Patient selection change handler
+    document.getElementById('patient_id').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const isPregnant = selectedOption.text.includes('(Pregnant)');
+        
+        // Show pregnancy warning if needed
+        if (isPregnant) {
+            const pregnancyCategory = document.getElementById('pregnancy_category');
+            const pregnancySafe = document.getElementById('pregnancy_safe');
+            
+            pregnancyCategory.closest('.col-md-6').style.border = '2px solid #ffc107';
+            pregnancySafe.closest('.col-md-6').style.border = '2px solid #ffc107';
+        }
+    });
+});
+</script>
+{% endblock %}
