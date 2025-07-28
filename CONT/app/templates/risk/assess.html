@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Assess Risk{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-stethoscope text-primary"></i> Pregnancy Risk Assessment</h2>
+                <a href="{{ url_for('risk.list_assessments') }}" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> Back to Assessments
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-chart-line"></i> Risk Assessment Form</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" class="needs-validation" novalidate>
+                                <!-- Patient Selection -->
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <label for="patient_id" class="form-label">
+                                            <i class="fas fa-user"></i> Select Pregnant Patient <span class="text-danger">*</span>
+                                        </label>
+                                        <select name="patient_id" id="patient_id" class="form-select" required>
+                                            <option value="">Choose a patient...</option>
+                                            {% for patient in patients %}
+                                            <option value="{{ patient.id }}" 
+                                                    {% if patient_id == patient.id %}selected{% endif %}
+                                                    data-age="{{ patient.age }}"
+                                                    data-weeks="{{ patient.pregnancy_week or '' }}">
+                                                {{ patient.first_name }} {{ patient.last_name }} 
+                                                ({{ patient.age }} years old)
+                                                {% if patient.pregnancy_week %} - Week {{ patient.pregnancy_week }}{% endif %}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="invalid-feedback">Please select a patient.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Pregnancy Information -->
+                                <div class="card mb-4">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0"><i class="fas fa-baby"></i> Pregnancy Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label for="pregnancy_week" class="form-label">
+                                                    Pregnancy Week <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="number" name="pregnancy_week" id="pregnancy_week" 
+                                                       class="form-control" min="1" max="42" required>
+                                                <div class="form-text">Current week of pregnancy (1-42)</div>
+                                                <div class="invalid-feedback">Please enter pregnancy week (1-42).</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="maternal_age" class="form-label">Maternal Age</label>
+                                                <input type="number" name="maternal_age" id="maternal_age" 
+                                                       class="form-control" min="15" max="50">
+                                                <div class="form-text">Will use patient's age if not specified</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Vital Signs -->
+                                <div class="card mb-4">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6 class="mb-0"><i class="fas fa-heartbeat"></i> Vital Signs & Measurements</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="bmi" class="form-label">BMI</label>
+                                                <input type="number" name="bmi" id="bmi" class="form-control" 
+                                                       step="0.1" min="15" max="50" placeholder="25.0">
+                                                <div class="form-text">Body Mass Index</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="systolic_bp" class="form-label">Systolic BP</label>
+                                                <input type="number" name="systolic_bp" id="systolic_bp" 
+                                                       class="form-control" min="80" max="200" placeholder="120">
+                                                <div class="form-text">mmHg</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="diastolic_bp" class="form-label">Diastolic BP</label>
+                                                <input type="number" name="diastolic_bp" id="diastolic_bp" 
+                                                       class="form-control" min="50" max="120" placeholder="80">
+                                                <div class="form-text">mmHg</div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <label for="glucose_level" class="form-label">Glucose Level</label>
+                                                <input type="number" name="glucose_level" id="glucose_level" 
+                                                       class="form-control" step="0.1" min="50" max="300" placeholder="100.0">
+                                                <div class="form-text">mg/dL (fasting glucose)</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check mt-4">
+                                                    <input type="checkbox" name="protein_in_urine" id="protein_in_urine" 
+                                                           class="form-check-input" value="1">
+                                                    <label for="protein_in_urine" class="form-check-label">
+                                                        <i class="fas fa-flask"></i> Protein in Urine (Proteinuria)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Medical History -->
+                                <div class="card mb-4">
+                                    <div class="card-header bg-secondary text-white">
+                                        <h6 class="mb-0"><i class="fas fa-history"></i> Medical History & Risk Factors</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-check mb-3">
+                                                    <input type="checkbox" name="previous_complications" id="previous_complications" 
+                                                           class="form-check-input" value="1">
+                                                    <label for="previous_complications" class="form-check-label">
+                                                        <i class="fas fa-exclamation-triangle text-warning"></i> Previous Pregnancy Complications
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="family_history" class="form-label">Family History</label>
+                                                <select name="family_history" id="family_history" class="form-select">
+                                                    <option value="">No significant history</option>
+                                                    <option value="diabetes">Diabetes</option>
+                                                    <option value="hypertension">Hypertension</option>
+                                                    <option value="preeclampsia">Preeclampsia</option>
+                                                    <option value="multiple">Multiple conditions</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <label for="smoking_status" class="form-label">Smoking Status</label>
+                                                <select name="smoking_status" id="smoking_status" class="form-select">
+                                                    <option value="never">Never smoked</option>
+                                                    <option value="former">Former smoker</option>
+                                                    <option value="current">Current smoker</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="alcohol_consumption" class="form-label">Alcohol Consumption</label>
+                                                <select name="alcohol_consumption" id="alcohol_consumption" class="form-select">
+                                                    <option value="none">None</option>
+                                                    <option value="occasional">Occasional</option>
+                                                    <option value="regular">Regular</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" class="btn btn-secondary me-md-2" onclick="window.history.back()">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-chart-line"></i> Assess Risk
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Information Panel -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-info-circle"></i> Risk Assessment Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="text-primary">What we assess:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> <strong>Preeclampsia Risk</strong><br>
+                                    <small class="text-muted">High blood pressure during pregnancy</small></li>
+                                <li><i class="fas fa-check text-success"></i> <strong>Gestational Diabetes</strong><br>
+                                    <small class="text-muted">Diabetes that develops during pregnancy</small></li>
+                                <li><i class="fas fa-check text-success"></i> <strong>Preterm Birth Risk</strong><br>
+                                    <small class="text-muted">Birth before 37 weeks</small></li>
+                            </ul>
+
+                            <hr>
+
+                            <h6 class="text-warning">Risk Factors Considered:</h6>
+                            <ul class="list-unstyled small">
+                                <li>• Maternal age (≥35 years)</li>
+                                <li>• BMI (obesity increases risk)</li>
+                                <li>• Blood pressure readings</li>
+                                <li>• Blood glucose levels</li>
+                                <li>• Protein in urine</li>
+                                <li>• Previous complications</li>
+                                <li>• Family medical history</li>
+                                <li>• Lifestyle factors</li>
+                            </ul>
+
+                            <div class="alert alert-info" role="alert">
+                                <small><i class="fas fa-lightbulb"></i> <strong>Tip:</strong> 
+                                Risk assessments should be performed regularly throughout pregnancy, 
+                                especially at key milestones and when symptoms develop.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('risk.analytics') }}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-chart-bar"></i> View Analytics
+                                </a>
+                                <a href="{{ url_for('risk.high_risk_patients') }}" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-exclamation-triangle"></i> High Risk Patients
+                                </a>
+                                <a href="{{ url_for('patients.list_patients') }}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-users"></i> All Patients
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+
+// Auto-populate maternal age from patient selection
+document.getElementById('patient_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const age = selectedOption.getAttribute('data-age');
+    const weeks = selectedOption.getAttribute('data-weeks');
+    
+    if (age) {
+        document.getElementById('maternal_age').value = age;
+    }
+    if (weeks) {
+        document.getElementById('pregnancy_week').value = weeks;
+    }
+});
+</script>
+{% endblock %}

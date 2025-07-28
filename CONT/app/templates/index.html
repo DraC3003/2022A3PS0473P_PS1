@@ -1,0 +1,199 @@
+{% extends "base.html" %} {% block title %}Healthcare App - Home{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Hero Section -->
+      <div class="jumbotron bg-primary text-white p-5 rounded mb-5">
+        <div class="container text-center">
+          <h1 class="display-4">
+            <i class="fas fa-heartbeat me-3"></i>
+            Healthcare Management System
+          </h1>
+          <p class="lead">
+            Comprehensive prescription management and AI-powered pregnancy risk
+            prediction
+          </p>
+          <hr class="my-4 bg-white" />
+          <p>
+            Helping healthcare providers deliver better care through intelligent
+            risk assessment and streamlined prescription management.
+          </p>
+          {% if not current_user.is_authenticated %}
+          <a
+            class="btn btn-light btn-lg me-3"
+            href="{{ url_for('auth.login') }}"
+            role="button">
+            <i class="fas fa-sign-in-alt me-2"></i>Login
+          </a>
+          <a
+            class="btn btn-outline-light btn-lg"
+            href="{{ url_for('auth.register') }}"
+            role="button">
+            <i class="fas fa-user-plus me-2"></i>Register
+          </a>
+          {% else %}
+          <a
+            class="btn btn-light btn-lg"
+            href="{{ url_for('main.dashboard') }}"
+            role="button">
+            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 card-hover border-0 shadow-sm">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <i class="fas fa-pills fa-3x text-primary"></i>
+              </div>
+              <h5 class="card-title">Prescription Management</h5>
+              <p class="card-text">
+                Store, track, and manage patient prescriptions with
+                comprehensive medication history and drug interaction checking.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 card-hover border-0 shadow-sm">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <i class="fas fa-baby fa-3x text-success"></i>
+              </div>
+              <h5 class="card-title">Pregnancy Risk Prediction</h5>
+              <p class="card-text">
+                AI-powered machine learning models predict pregnancy
+                complications and identify optimal timing for consultations.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 card-hover border-0 shadow-sm">
+            <div class="card-body text-center">
+              <div class="mb-3">
+                <i class="fas fa-chart-line fa-3x text-warning"></i>
+              </div>
+              <h5 class="card-title">Risk Timeline Analysis</h5>
+              <p class="card-text">
+                Track risk levels throughout pregnancy with week-by-week
+                analysis and automated scheduling recommendations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Benefits -->
+      <div class="row mb-5">
+        <div class="col-lg-6">
+          <h3 class="mb-4">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            Key Benefits
+          </h3>
+          <ul class="list-unstyled">
+            <li class="mb-3">
+              <i class="fas fa-shield-alt text-primary me-2"></i>
+              <strong>Enhanced Patient Safety:</strong> Comprehensive medication
+              tracking and interaction checking
+            </li>
+            <li class="mb-3">
+              <i class="fas fa-brain text-primary me-2"></i>
+              <strong>AI-Powered Insights:</strong> Machine learning models for
+              accurate risk prediction
+            </li>
+            <li class="mb-3">
+              <i class="fas fa-clock text-primary me-2"></i>
+              <strong>Optimal Timing:</strong> Automated scheduling based on
+              risk assessment
+            </li>
+            <li class="mb-3">
+              <i class="fas fa-chart-bar text-primary me-2"></i>
+              <strong>Data-Driven Care:</strong> Analytics and insights for
+              better decision making
+            </li>
+            <li class="mb-3">
+              <i class="fas fa-mobile-alt text-primary me-2"></i>
+              <strong>User-Friendly Interface:</strong> Intuitive design for
+              healthcare professionals
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-lg-6">
+          <h3 class="mb-4">
+            <i class="fas fa-stethoscope text-info me-2"></i>
+            Clinical Features
+          </h3>
+          <div class="row">
+            <div class="col-12 mb-3">
+              <div class="card bg-light border-0">
+                <div class="card-body">
+                  <h6 class="card-title">
+                    <i
+                      class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Risk Assessment
+                  </h6>
+                  <small class="text-muted">
+                    Preeclampsia, gestational diabetes, and preterm birth
+                    prediction
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <div class="card bg-light border-0">
+                <div class="card-body">
+                  <h6 class="card-title">
+                    <i class="fas fa-calendar-check text-success me-2"></i>
+                    Smart Scheduling
+                  </h6>
+                  <small class="text-muted">
+                    Automated appointment recommendations based on risk levels
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <div class="card bg-light border-0">
+                <div class="card-body">
+                  <h6 class="card-title">
+                    <i class="fas fa-notes-medical text-primary me-2"></i>
+                    Complete Records
+                  </h6>
+                  <small class="text-muted">
+                    Comprehensive patient and prescription management
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Call to Action -->
+      {% if not current_user.is_authenticated %}
+      <div class="card bg-gradient-primary text-white text-center mb-5">
+        <div class="card-body py-5">
+          <h3 class="card-title">Ready to Get Started?</h3>
+          <p class="card-text lead">
+            Join healthcare providers who are already using our system to
+            improve patient outcomes.
+          </p>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-rocket me-2"></i>Start Using Healthcare App
+          </a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

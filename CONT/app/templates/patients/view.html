@@ -1,0 +1,289 @@
+{% extends "base.html" %} {% block title %}Patient Details - {{
+patient.first_name }} {{ patient.last_name }}{% endblock %} {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Patient Details</h1>
+  <div>
+    <a
+      href="{{ url_for('patients.edit_patient', id=patient.id) }}"
+      class="btn btn-primary">
+      <i class="bi bi-pencil"></i> Edit Patient
+    </a>
+    <a
+      href="{{ url_for('patients.list_patients') }}"
+      class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Patient Information -->
+  <div class="col-md-8">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-person-circle"></i> Personal Information
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p>
+              <strong>Full Name:</strong> {{ patient.first_name }} {{
+              patient.last_name }}
+            </p>
+            <p><strong>Email:</strong> {{ patient.email }}</p>
+            <p><strong>Phone:</strong> {{ patient.phone }}</p>
+            <p><strong>Gender:</strong> {{ patient.gender }}</p>
+            <p>
+              <strong>Date of Birth:</strong> {{
+              patient.date_of_birth.strftime('%B %d, %Y') }}
+            </p>
+            {% if patient.blood_type %}
+            <p><strong>Blood Type:</strong> {{ patient.blood_type }}</p>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <p><strong>Address:</strong> {{ patient.address }}</p>
+            <p>
+              <strong>Emergency Contact:</strong> {{ patient.emergency_contact
+              }}
+            </p>
+            <p>
+              <strong>Emergency Phone:</strong> {{ patient.emergency_phone }}
+            </p>
+            <p>
+              <strong>Registered:</strong> {{ patient.created_at.strftime('%B
+              %d, %Y') }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Information -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-heart-pulse"></i> Medical Information
+        </h5>
+      </div>
+      <div class="card-body">
+        {% if patient.allergies %}
+        <p><strong>Allergies:</strong> {{ patient.allergies }}</p>
+        {% endif %} {% if patient.medical_history %}
+        <p><strong>Medical History:</strong> {{ patient.medical_history }}</p>
+        {% endif %} {% if patient.current_medications %}
+        <p>
+          <strong>Current Medications:</strong> {{ patient.current_medications
+          }}
+        </p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Pregnancy Information -->
+    {% if patient.is_pregnant %}
+    <div class="card mb-4">
+      <div class="card-header bg-pink">
+        <h5 class="card-title mb-0 text-white">
+          <i class="bi bi-baby"></i> Pregnancy Information
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            {% if patient.pregnancy_start_date %}
+            <p>
+              <strong>Pregnancy Start:</strong> {{
+              patient.pregnancy_start_date.strftime('%B %d, %Y') }}
+            </p>
+            {% endif %} {% if patient.expected_due_date %}
+            <p>
+              <strong>Expected Due Date:</strong> {{
+              patient.expected_due_date.strftime('%B %d, %Y') }}
+            </p>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            {% if patient.pregnancy_complications %}
+            <p>
+              <strong>Complications:</strong> {{ patient.pregnancy_complications
+              }}
+            </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Prescriptions -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-prescription2"></i> Recent Prescriptions
+        </h5>
+      </div>
+      <div class="card-body">
+        {% if prescriptions %}
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Medication</th>
+                <th>Dosage</th>
+                <th>Prescribed Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for prescription in prescriptions %}
+              <tr>
+                <td>{{ prescription.medication_name }}</td>
+                <td>{{ prescription.dosage }}</td>
+                <td>{{ prescription.prescribed_date.strftime('%m/%d/%Y') }}</td>
+                <td>
+                  {% if prescription.is_active %}
+                  <span class="badge bg-success">Active</span>
+                  {% else %}
+                  <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a
+                    href="{{ url_for('prescriptions.view_prescription', id=prescription.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                    >View</a
+                  >
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No prescriptions found.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Risk Assessments -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-shield-exclamation"></i> Risk Assessment History
+        </h5>
+      </div>
+      <div class="card-body">
+        {% if risk_assessments %}
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Assessment Date</th>
+                <th>Risk Level</th>
+                <th>Overall Score</th>
+                <th>Next Checkup</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for assessment in risk_assessments %}
+              <tr>
+                <td>{{ assessment.assessment_date.strftime('%m/%d/%Y') }}</td>
+                <td>
+                  {% if assessment.risk_level == 'High' %}
+                  <span class="badge bg-danger"
+                    >{{ assessment.risk_level }}</span
+                  >
+                  {% elif assessment.risk_level == 'Medium' %}
+                  <span class="badge bg-warning"
+                    >{{ assessment.risk_level }}</span
+                  >
+                  {% else %}
+                  <span class="badge bg-success"
+                    >{{ assessment.risk_level }}</span
+                  >
+                  {% endif %}
+                </td>
+                <td>{{ assessment.overall_risk_score }}%</td>
+                <td>
+                  {% if assessment.next_checkup_date %} {{
+                  assessment.next_checkup_date.strftime('%m/%d/%Y') }} {% else
+                  %}
+                  <span class="text-muted">Not scheduled</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a
+                    href="{{ url_for('risk_prediction.view_assessment', id=assessment.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                    >View</a
+                  >
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No risk assessments found.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Sidebar -->
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-lightning"></i> Quick Actions
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a
+            href="{{ url_for('prescriptions.add_prescription') }}?patient_id={{ patient.id }}"
+            class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Prescription
+          </a>
+          <a
+            href="{{ url_for('risk_prediction.assess_risk') }}?patient_id={{ patient.id }}"
+            class="btn btn-warning">
+            <i class="bi bi-shield-check"></i> Risk Assessment
+          </a>
+          <a
+            href="{{ url_for('patients.edit_patient', id=patient.id) }}"
+            class="btn btn-outline-primary">
+            <i class="bi bi-pencil"></i> Edit Patient
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient Statistics -->
+    <div class="card mt-3">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-graph-up"></i> Statistics
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-6">
+            <h4 class="text-primary">{{ prescriptions|length }}</h4>
+            <small class="text-muted">Prescriptions</small>
+          </div>
+          <div class="col-6">
+            <h4 class="text-warning">{{ risk_assessments|length }}</h4>
+            <small class="text-muted">Assessments</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block page_title %}Add Prescription{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-pills me-2"></i>New Prescription
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('prescriptions.add_prescription') }}">
+                    <!-- Patient Selection -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label for="patient_id" class="form-label">Patient *</label>
+                            <select class="form-select" id="patient_id" name="patient_id" required>
+                                <option value="">Select a patient...</option>
+                                {% for patient in patients %}
+                                <option value="{{ patient.id }}" 
+                                        {% if patient_id and patient.id == patient_id|int %}selected{% endif %}>
+                                    {{ patient.first_name }} {{ patient.last_name }} - {{ patient.email }}
+                                    {% if patient.is_pregnant %}<span class="text-success">(Pregnant)</span>{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Medication Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="medication_name" class="form-label">Medication Name *</label>
+                            <input type="text" class="form-control" id="medication_name" name="medication_name" required 
+                                   placeholder="e.g., Amoxicillin">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dosage" class="form-label">Dosage *</label>
+                            <input type="text" class="form-control" id="dosage" name="dosage" required 
+                                   placeholder="e.g., 500mg">
+                        </div>
+                    </div>
+
+                    <!-- Frequency and Duration -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="frequency" class="form-label">Frequency *</label>
+                            <select class="form-select" id="frequency" name="frequency" required>
+                                <option value="">Select frequency...</option>
+                                <option value="Once daily">Once daily</option>
+                                <option value="Twice daily">Twice daily</option>
+                                <option value="Three times daily">Three times daily</option>
+                                <option value="Four times daily">Four times daily</option>
+                                <option value="Every 4 hours">Every 4 hours</option>
+                                <option value="Every 6 hours">Every 6 hours</option>
+                                <option value="Every 8 hours">Every 8 hours</option>
+                                <option value="Every 12 hours">Every 12 hours</option>
+                                <option value="As needed">As needed</option>
+                                <option value="Before meals">Before meals</option>
+                                <option value="After meals">After meals</option>
+                                <option value="At bedtime">At bedtime</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="duration" class="form-label">Duration *</label>
+                            <input type="text" class="form-control" id="duration" name="duration" required 
+                                   placeholder="e.g., 7 days, 2 weeks">
+                        </div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="start_date" class="form-label">Start Date *</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date">
+                        </div>
+                    </div>
+
+                    <!-- Diagnosis -->
+                    <div class="mb-3">
+                        <label for="diagnosis" class="form-label">Diagnosis *</label>
+                        <input type="text" class="form-control" id="diagnosis" name="diagnosis" required 
+                               placeholder="Primary diagnosis or condition">
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="mb-3">
+                        <label for="instructions" class="form-label">Instructions</label>
+                        <textarea class="form-control" id="instructions" name="instructions" rows="3" 
+                                  placeholder="Special instructions for taking the medication..."></textarea>
+                    </div>
+
+                    <!-- Pregnancy Safety -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="pregnancy_category" class="form-label">Pregnancy Category</label>
+                            <select class="form-select" id="pregnancy_category" name="pregnancy_category">
+                                <option value="">Select category...</option>
+                                <option value="A">Category A - No risk</option>
+                                <option value="B">Category B - No evidence of risk</option>
+                                <option value="C">Category C - Risk cannot be ruled out</option>
+                                <option value="D">Category D - Positive evidence of risk</option>
+                                <option value="X">Category X - Contraindicated</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4 pt-2">
+                                <input class="form-check-input" type="checkbox" id="pregnancy_safe" name="pregnancy_safe" value="1">
+                                <label class="form-check-label" for="pregnancy_safe">
+                                    Safe during pregnancy
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-4">
+                        <label for="notes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                  placeholder="Any additional notes or observations..."></textarea>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('prescriptions.list_prescriptions') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Add Prescription
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-set end date based on start date and duration
+document.getElementById('start_date').addEventListener('change', updateEndDate);
+document.getElementById('duration').addEventListener('input', updateEndDate);
+
+function updateEndDate() {
+    const startDate = document.getElementById('start_date').value;
+    const duration = document.getElementById('duration').value.toLowerCase();
+    
+    if (startDate && duration) {
+        const start = new Date(startDate);
+        let days = 0;
+        
+        // Parse common duration formats
+        if (duration.includes('day')) {
+            days = parseInt(duration.match(/\d+/)) || 0;
+        } else if (duration.includes('week')) {
+            days = (parseInt(duration.match(/\d+/)) || 0) * 7;
+        } else if (duration.includes('month')) {
+            days = (parseInt(duration.match(/\d+/)) || 0) * 30;
+        }
+        
+        if (days > 0) {
+            const endDate = new Date(start);
+            endDate.setDate(start.getDate() + days);
+            document.getElementById('end_date').value = endDate.toISOString().split('T')[0];
+        }
+    }
+}
+
+// Set default start date to today
+document.getElementById('start_date').value = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}
